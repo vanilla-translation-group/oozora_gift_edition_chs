@@ -6,6 +6,7 @@ import textwrap
 
 MAX_LINE_LEN_BEFORE_WRAP = 56
 
+
 # Adjust the offsets in the header to account for the size change
 def adjust_header_offsets(data: bytearray, sections: list[int], original_offset: int, size_delta: int):
     for section in sections:
@@ -22,13 +23,14 @@ def adjust_header_offsets(data: bytearray, sections: list[int], original_offset:
             exit()
         data[i:i + 4] = (section + size_delta).to_bytes(4, "big")
 
+
 def patch_file(data: bytearray, patch: dict, names: dict):
     # Get a list of section offsets. Each section starts with "SCRE"
     sections = []
     i = 0
     while (i := data.find(b"SCRE", i + 1)) != -1:
         sections.append(i)
-    
+
     # Find the unique section corresponding to this patch
     candidates = []
     for n, section in enumerate(sections):
@@ -38,7 +40,7 @@ def patch_file(data: bytearray, patch: dict, names: dict):
 #    print(sections, candidates, data.find(patch[1]["jp"].encode("utf-8")))
 
     if len(candidates) != 1:
-        candidates = [194087] # Magic, do not touch
+        candidates = [194087]  # Magic, do not touch
 
     size_delta = 0
     offset = candidates[0]
@@ -69,15 +71,16 @@ def patch_file(data: bytearray, patch: dict, names: dict):
             end = start + len(jp_name.encode("utf-8"))
             data[start:end] = new_name
             size_delta += len(new_name) - len(jp_name.encode("utf-8"))
-    
+
     # Patch header
     adjust_header_offsets(data, sections, offset, size_delta)
+
 
 if __name__ == "__main__":
     if len(sys.argv) < 4:
         print("Usage: python patch_text.py <original.arc> <output.arc> <names.json> [patch1.json] [patch2.json] ...")
         exit()
-    
+
     original_arc = sys.argv[1]
     output_arc = sys.argv[2]
     names_file = sys.argv[3]
@@ -85,10 +88,10 @@ if __name__ == "__main__":
 
     with open(original_arc, "rb") as f:
         data = bytearray(f.read())
-    
+
     with open(names_file, "r", encoding="utf-8") as f:
         names = json.load(f)
-    
+
     for patch in patch_files:
         with open(patch, "r", encoding="utf-8") as f:
             patch_file(data, json.load(f), names)
