@@ -13,14 +13,22 @@ SetFont "Microsoft YaHei" 8
 ShowInstDetails show
 
 !define MUI_FINISHPAGE_NOAUTOCLOSE
+!define MUI_UNFINISHPAGE_NOAUTOCLOSE
 !define MUI_ICON "hat.ico"
 !define MUI_WELCOMEFINISHPAGE_BITMAP "${TARGET_EDITION}_side.bmp"
+!define MUI_UNWELCOMEFINISHPAGE_BITMAP "${NSISDIR}\Contrib\Graphics\Wizard\nsis3-metro.bmp"
 
 !insertmacro MUI_PAGE_WELCOME
 !insertmacro MUI_PAGE_LICENSE "license.txt"
 !insertmacro MUI_PAGE_DIRECTORY
 !insertmacro MUI_PAGE_INSTFILES
 !insertmacro MUI_PAGE_FINISH
+
+!insertmacro MUI_UNPAGE_WELCOME
+!insertmacro MUI_UNPAGE_CONFIRM
+!insertmacro MUI_UNPAGE_INSTFILES
+!insertmacro MUI_UNPAGE_FINISH
+
 !insertmacro MUI_LANGUAGE "SimpChinese"
 
 Section "安装汉化补丁" SEC01
@@ -46,4 +54,20 @@ Section "安装汉化补丁" SEC01
 	File "${TARGET_EDITION}\script.chs"
 	File "${TARGET_EDITION}\image.chs"
 	File OozoraGEP.exe
+	WriteUninstaller "$INSTDIR\PatchUninstaller.exe"
+SectionEnd
+
+Section "Uninstall"
+	unicode::FileUnicode2Ansi "$INSTDIR\systeminfo.json" "$INSTDIR\systeminfo_tmp.json" "UTF-8"
+	nsJSON::Set /file "$INSTDIR\systeminfo_tmp.json"
+	nsJSON::Set `System` `GameTitle` /value `"この大空に、翼をひろげて Gift Edition ${TARGET_EDITION}"`
+	nsJSON::Set `GameFile` `script` `Archive` /value `"script.arc"`
+	nsJSON::Set `GameFile` `image` `Archive` /value `"image.arc"`
+	nsJSON::Serialize /format /file "$INSTDIR\systeminfo_tmp.json"
+	unicode::FileAnsi2Unicode "$INSTDIR\systeminfo_tmp.json" "$INSTDIR\systeminfo.json" "UTF-8"
+	Delete "$INSTDIR\systeminfo_tmp.json"
+	Delete "$INSTDIR\script.chs"
+	Delete "$INSTDIR\image.chs"
+	Delete "$INSTDIR\OozoraGEP.exe"
+	Delete "$INSTDIR\PatchUninstaller.exe"
 SectionEnd
