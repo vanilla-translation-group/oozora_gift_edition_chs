@@ -1,0 +1,12 @@
+--- Unicode_V1.2/Source/unicode.c	2022-06-25 22:17:22.000000000 +0800
++++ Unicode_V1.2/Source/unicode.c	2024-08-30 11:55:42.000000000 +0800
+@@ -319,8 +319,7 @@
+
+       //UTF-16LE -> UTF-8
+       nBufferLen=WideCharToMultiByte(CP_UTF8, 0, pBufferWideCharLEw, dwBytesToRead, pBufferMultiByte, dwBytesToRead*2, 0, 0);
+-      pBufferWrite=pBufferMultiByte - 3;
+-      nBufferLen+=3;
++      pBufferWrite = pBufferMultiByte;
+     }
+     else if (lstrcmpi(tUnicodeType, _T("UTF-16LE")) == 0)
+     {

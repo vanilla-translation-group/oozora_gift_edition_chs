@@ -2,6 +2,8 @@
 
 在 Releases 中下载对应版本的安装包，安装完成后打开目录下的 OozoraGEP.exe 即可使用。
 
+注意如果要卸载游戏需要先卸载补丁，否则会卸载失败。
+
 ## STAFF
 
 scientificworld：初翻、修图~~修了一半跑路了~~、程序？
@@ -40,7 +42,8 @@ Misaka13514：校对润色、测试
 4. 从 [Frida Releases](https://github.com/frida/frida/releases) 下载 `frida-core-devkit-windows-x86`，解压后把文件放在和 `OozoraGEP.c` 同目录下，执行 `cl /MT OozoraGEP.c icon.res` 编译出补丁（要显示调试窗口把参数改成 `/MTd`）
 5. 修改 installer.nsi 第三行的目标版本，选择 `Kotori` / `Ageha`
 6. 把图片封包里的 Event CG 较小版本提取出来，截一个 820 * 1570 的部分另存为 `side.png`，执行 `magick convert -resize 410x785 side.png BMP2:side.bmp`
-7. 把所有文件都放在正确的位置后，使用 `makensis /INPUTCHARSET UTF8 installer.nsi` 构建出最终的安装包。（需要安装 [nsJSON](https://nsis.sourceforge.io/NsJSON_plug-in) 和 [Unicode](https://nsis.sourceforge.io/Unicode_plug-in) 插件）
+7. 安装 [nsJSON](https://nsis.sourceforge.io/NsJSON_plug-in) 和 [Unicode](https://nsis.sourceforge.io/Unicode_plug-in) 插件，Unicode 插件需要打补丁（`dos2unix Unicode_V1.2/Source/unicode.c && patch -p0 < unicode_plugin.patch`）并重新编译以去除写入文件时的 BOM 头。
+8. 把所有文件都放在正确的位置后，使用 `makensis /INPUTCHARSET UTF8 installer.nsi` 构建出最终的安装包。
 
 ## 版权信息
 
